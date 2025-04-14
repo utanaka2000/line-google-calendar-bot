@@ -9,9 +9,12 @@ from linebot.v3.messaging import (
     TextMessage,
 )
 
-load_dotenv()
+from src.helpers import get_secret
 
-configuration = Configuration(access_token=os.environ["LINE_CHANNEL_ACCESS_TOKEN"])
+load_dotenv()
+LINE_SECRET_ID = os.environ["LINE_SECRET_ID"]
+
+configuration = Configuration(access_token=get_secret(LINE_SECRET_ID))
 
 def send_test_message(to, message):
     # Create an instance of the API client
