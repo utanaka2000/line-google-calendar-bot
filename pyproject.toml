@@ -1,5 +1,5 @@
 [project]
-name = "line-messaging-api"
+name = "line-google-calendar-bot"
 version = "0.1.0"
 description = ""
 authors = [
