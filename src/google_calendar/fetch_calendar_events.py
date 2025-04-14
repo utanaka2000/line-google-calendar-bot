@@ -24,7 +24,7 @@ def get_secret(project_id, secret_name):
     secret_payload = response.payload.data.decode("UTF-8")
     return json.loads(secret_payload)
 
-def main():
+def fetch_upcoming_events(num_events=10):
   """Shows basic usage of the Google Calendar API.
   Prints the start and name of the next 10 events on the user's calendar.
   """
@@ -32,41 +32,37 @@ def main():
   creds = Credentials.from_authorized_user_info(secret, SCOPES)
   creds.refresh(Request())
 
-  try:
-    service = build("calendar", "v3", credentials=creds)
+  service = build("calendar", "v3", credentials=creds)
 
-    # Call the Calendar API
-    # 日本時間（JST）
-    jst = pytz.timezone('Asia/Tokyo')
-    now_jst = datetime.datetime.now(jst)
-    now_utc = now_jst.astimezone(pytz.utc)
-    now = now_utc.isoformat()
-    print("Getting the upcoming 10 events")
-    events_result = (
-        service.events()
-        .list(
-            calendarId="primary",
-            timeMin=now,
-            maxResults=10,
-            singleEvents=True,
-            orderBy="startTime",
-        )
-        .execute()
-    )
-    events = events_result.get("items", [])
+  # Call the Calendar API
+  # 日本時間（JST）
+  jst = pytz.timezone('Asia/Tokyo')
+  now_jst = datetime.datetime.now(jst)
+  now_utc = now_jst.astimezone(pytz.utc)
+  now = now_utc.isoformat()
+  events_result = (
+      service.events()
+      .list(
+          calendarId="primary",
+          timeMin=now,
+          maxResults=num_events,
+          singleEvents=True,
+          orderBy="startTime",
+      )
+      .execute()
+  )
+  events = events_result.get("items", [])
+  return events
 
-    if not events:
-      print("No upcoming events found.")
-      return
-
-    # Prints the start and name of the next 10 events
-    for event in events:
-      start = event["start"].get("dateTime", event["start"].get("date"))
-      print(start, event["summary"])
-
-  except HttpError as error:
-    print(f"An error occurred: {error}")
-
+def fetch_tomorrow_events():
+  events = fetch_upcoming_events()
+  tomorrow = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).date() + datetime.timedelta(days=1)
+  return [
+      event["summary"] for event in events
+      if datetime.datetime.fromisoformat(event["start"].get("date")).date() == tomorrow
+  ]
+  
 
 if __name__ == "__main__":
-  main()
+  print(fetch_upcoming_events())
+  print(fetch_tomorrow_events())
