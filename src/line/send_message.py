@@ -1,11 +1,15 @@
 import os
+
+from dotenv import load_dotenv
 from linebot.v3.messaging import (
-    Configuration,
     ApiClient,
+    Configuration,
     MessagingApi,
     PushMessageRequest,
-    TextMessage
+    TextMessage,
 )
+
+load_dotenv()
 
 configuration = Configuration(access_token=os.environ["LINE_CHANNEL_ACCESS_TOKEN"])
 
