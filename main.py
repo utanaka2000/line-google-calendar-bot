@@ -1,5 +1,4 @@
 import os
-import textwrap
 
 import dotenv
 
@@ -14,11 +13,12 @@ def main(request):
     if not events:
         return "No events found", 200
 
-    message = textwrap.dedent(f"""\
-    あすの予定
-    
-    {'\n'.join(events)}
-    """)
+
+    message = (
+        "明日は\n\n"
+        f"{'\n'.join([f"「{event}」"for event in events]).strip()}\n\n"
+        "です！\nヴィラです"
+    )
 
     send_test_message(os.environ["LINE_USER_ID"], message)
 
