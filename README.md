@@ -18,17 +18,21 @@ Line のトークルームに Google カレンダーの予定のリマインド�
     poetry run python src/google_calendar/quickstart.py
     ```
 
-3. `token.json`をsecretsに登録する
+3. token.json の内容を`.env.yaml`に書く
 
-    ```bash
-    gcloud secrets create oauth2-token --data-file=token.json
+    ```yaml
+    CALENDAR_TOKEN_JSON: '{"token": "... }'
     ```
 
 ### Line
 
 #### APIトークンの確認
 
-チャネルアクセストークンを確認し、secret managerに`line-channel-access-token`で登録する
+チャネルアクセストークンを確認し、`.env.yaml`に書く
+
+```yaml
+LINE_CHANNEL_ACCESS_TOKEN: XXX...
+```
 
 #### 送信先グループIDの確認
 
@@ -44,7 +48,11 @@ Line のトークルームに Google カレンダーの予定のリマインド�
 
 3. Lineのwebhookに2のURLを登録する
 
-4. 確認したいグループで何か投稿すると、コンソールにprintされるのでメモする
+4. 確認したいグループで何か投稿すると、コンソールにprintされるので`.env.yaml`に書く
+
+  ```yaml
+  LINE_USER_ID: XXX...
+  ```
 
 ## GCP
 
@@ -64,12 +72,13 @@ gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
 
 #### デプロイ実行
 
-```bash
+```sh
 gcloud functions deploy hello_world --runtime python312 \
-  --trigger-http --entry-point main \
-  --set-env-vars GCP_PROJECT_ID=your-project-id,CALENDAR_SECRET_ID=oauth2-token,LINE_SECRET_ID=line-channel-access-token,LINE_USER_ID=your-user-id \
-  --service-account my-function-sa@YOUR_PROJECT_ID.iam.gserviceaccount.com \
-  --no-allow-unauthenticated --region=asia-northeast1
+ --trigger-http --entry-point main \
+ --env-vars-file .env.yaml \
+ --service-account my-function-sa@YOUR_PROJECT_ID.iam.gserviceaccount.com \
+ --no-allow-unauthenticated --region=asia-northeast1 \
+ --gen2
 ```
 
 ### Cloud Scheduler
