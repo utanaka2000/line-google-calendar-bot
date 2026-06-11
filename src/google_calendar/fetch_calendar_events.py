@@ -54,8 +54,8 @@ def fetch_tomorrow_events():
     return [
         event["summary"]
         for event in events
-        if datetime.datetime.fromisoformat(event["start"].get("date")).date()
-        == tomorrow
+        if (start := event["start"].get("date") or event["start"].get("dateTime"))
+        and datetime.datetime.fromisoformat(start).date() == tomorrow
     ]
 
 
